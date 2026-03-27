@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     "plane.license",
     "plane.api",
     "plane.authentication",
+    # Integrations
+    "plane_lazy_bird",
     # Third-party things
     "rest_framework",
     "corsheaders",
@@ -469,3 +471,8 @@ if ENABLE_DRF_SPECTACULAR:
 # MongoDB Settings
 MONGO_DB_URL = os.environ.get("MONGO_DB_URL", False)
 MONGO_DB_DATABASE = os.environ.get("MONGO_DB_DATABASE", False)
+
+# Lazy-Bird Integration Settings
+LAZY_BIRD_API_URL = os.environ.get("LAZY_BIRD_API_URL", "http://localhost:8000")
+LAZY_BIRD_API_KEY = os.environ.get("LAZY_BIRD_API_KEY", "")
+LAZY_BIRD_WEBHOOK_SECRET = os.environ.get("LAZY_BIRD_WEBHOOK_SECRET", "")

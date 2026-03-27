@@ -21,6 +21,7 @@ urlpatterns = [
     path("api/v1/", include("plane.api.urls")),
     path("auth/", include("plane.authentication.urls")),
     path("", include("plane.web.urls")),
+    path("api/integrations/", include("plane_lazy_bird.urls")),
 ]
 
 if settings.ENABLE_DRF_SPECTACULAR:
