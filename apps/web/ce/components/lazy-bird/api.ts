@@ -105,6 +105,18 @@ export class LazyBirdService extends APIService {
         throw error?.response?.data;
       });
   }
+
+  async batchTaskStatus(
+    issueIds: string[]
+  ): Promise<Record<string, TLazyBirdTaskRun>> {
+    return this.post(`${LAZY_BIRD_BASE}/issues/batch-status/`, {
+      issue_ids: issueIds,
+    })
+      .then((response) => response?.data)
+      .catch((error) => {
+        throw error?.response?.data;
+      });
+  }
 }
 
 export const lazyBirdService = new LazyBirdService();

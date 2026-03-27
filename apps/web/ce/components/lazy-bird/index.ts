@@ -12,6 +12,7 @@ export { TaskLogsModal } from "./task-logs-modal";
 export { TriggerTaskModal } from "./trigger-task-modal";
 export { TaskStatusBadge } from "./task-status-badge";
 export { useLazyBirdTasks, useLazyBirdConfig, useTriggerTask } from "./hooks";
+export { LazyBirdStore, lazyBirdStore } from "./store";
 export type { ConfigFormState } from "./hooks";
 export type {
   TLazyBirdAutomationConfig,
