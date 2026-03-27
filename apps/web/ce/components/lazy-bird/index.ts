@@ -8,6 +8,8 @@
 export { LazyBirdService, lazyBirdService } from "./api";
 export { LazyBirdTaskPanel } from "./task-panel";
 export { LazyBirdSettings } from "./settings";
+export { TaskLogsModal } from "./task-logs-modal";
+export { TriggerTaskModal } from "./trigger-task-modal";
 export type {
   TLazyBirdAutomationConfig,
   TLazyBirdTaskRun,
