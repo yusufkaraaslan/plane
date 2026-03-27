@@ -11,6 +11,8 @@ export type TLazyBirdAutomationConfig = {
   ready_state_name: string;
   in_progress_state_name: string;
   review_state_name: string;
+  api_url: string;
+  api_key_masked: string;
   created_at: string;
   updated_at: string;
 };

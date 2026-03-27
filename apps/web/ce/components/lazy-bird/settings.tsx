@@ -113,6 +113,49 @@ export const LazyBirdSettings = observer(function LazyBirdSettings(props: Props)
           />
         </div>
 
+        {/* API Connection (per-project override) */}
+        <fieldset className="space-y-3">
+          <legend className="text-sm font-medium text-custom-text-200">
+            API Connection
+          </legend>
+          <p className="text-xs text-custom-text-400">
+            Leave empty to use the global configuration from environment variables.
+          </p>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="space-y-1">
+              <label htmlFor="lb-api-url" className="block text-xs text-custom-text-300">
+                API URL
+              </label>
+              <input
+                id="lb-api-url"
+                type="url"
+                value={form.api_url}
+                onChange={(e) => updateField("api_url", e.target.value)}
+                placeholder="http://localhost:8000"
+                className="w-full rounded-md border border-custom-border-200 bg-custom-background-100 px-3 py-2 text-sm text-custom-text-100 placeholder:text-custom-text-400 focus:border-custom-primary-100 focus:outline-none focus:ring-1 focus:ring-custom-primary-100"
+                disabled={disabled}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label htmlFor="lb-api-key" className="block text-xs text-custom-text-300">
+                API Key
+              </label>
+              <input
+                id="lb-api-key"
+                type="password"
+                value={form.api_key}
+                onChange={(e) => updateField("api_key", e.target.value)}
+                placeholder="Enter new key to update"
+                className="w-full rounded-md border border-custom-border-200 bg-custom-background-100 px-3 py-2 text-sm text-custom-text-100 placeholder:text-custom-text-400 focus:border-custom-primary-100 focus:outline-none focus:ring-1 focus:ring-custom-primary-100"
+                disabled={disabled}
+                autoComplete="off"
+              />
+            </div>
+          </div>
+        </fieldset>
+
         {/* State mapping */}
         <fieldset className="space-y-3">
           <legend className="text-sm font-medium text-custom-text-200">

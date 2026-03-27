@@ -19,6 +19,8 @@ export type ConfigFormState = {
   ready_state_name: string;
   in_progress_state_name: string;
   review_state_name: string;
+  api_url: string;
+  api_key: string;
 };
 
 const DEFAULT_FORM: ConfigFormState = {
@@ -27,6 +29,8 @@ const DEFAULT_FORM: ConfigFormState = {
   ready_state_name: "Ready",
   in_progress_state_name: "In Progress",
   review_state_name: "In Review",
+  api_url: "",
+  api_key: "",
 };
 
 type UseLazyBirdConfigReturn = {
@@ -65,6 +69,8 @@ export function useLazyBirdConfig(projectId: string): UseLazyBirdConfigReturn {
         ready_state_name: config.ready_state_name,
         in_progress_state_name: config.in_progress_state_name,
         review_state_name: config.review_state_name,
+        api_url: config.api_url || "",
+        api_key: "", // Never pre-filled — write-only on backend
       });
       setIsNew(false);
     } catch (err: any) {
