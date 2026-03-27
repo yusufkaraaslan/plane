@@ -6,6 +6,7 @@
  */
 
 export { LazyBirdService, lazyBirdService } from "./api";
+export { LazyBirdTaskPanel } from "./task-panel";
 export type {
   TLazyBirdAutomationConfig,
   TLazyBirdTaskRun,
