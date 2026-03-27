@@ -4,10 +4,9 @@
  * LazyBirdTaskPanel — Issue sidebar widget showing automation task status.
  *
  * Displays: status badge, PR link, View Logs / Cancel / Trigger buttons.
- * Fetches task runs from GET /api/webhooks/lazy-bird/issues/{issue_id}/tasks/.
+ * Uses useLazyBirdTasks for data fetching/polling and useTriggerTask for actions.
  */
 
-import { useCallback, useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import {
   Bot,
@@ -19,8 +18,8 @@ import {
 } from "lucide-react";
 import { Spinner } from "@plane/ui";
 
-import { lazyBirdService } from "./api";
-import type { TLazyBirdTaskRun, TLazyBirdTaskRunStatus } from "./types";
+import { useLazyBirdTasks, useTriggerTask } from "./hooks";
+import type { TLazyBirdTaskRunStatus } from "./types";
 
 type Props = {
   issueId: string;
@@ -43,70 +42,18 @@ const STATUS_CONFIG: Record<
 export const LazyBirdTaskPanel = observer(function LazyBirdTaskPanel(props: Props) {
   const { issueId, projectId, disabled = false } = props;
 
-  const [taskRuns, setTaskRuns] = useState<TLazyBirdTaskRun[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [triggering, setTriggering] = useState(false);
-  const [cancelling, setCancelling] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { tasks, latestTask, hasActiveTask, loading, error: fetchError, refetch } =
+    useLazyBirdTasks(issueId);
+  const { trigger, triggering, cancel, cancelling, error: actionError } =
+    useTriggerTask(issueId, refetch);
 
-  const fetchTaskRuns = useCallback(async () => {
-    try {
-      setError(null);
-      const data = await lazyBirdService.listTaskRuns(issueId);
-      setTaskRuns(data);
-    } catch (err) {
-      setError("Failed to load automation tasks");
-    } finally {
-      setLoading(false);
-    }
-  }, [issueId]);
+  const error = fetchError || actionError;
 
-  useEffect(() => {
-    fetchTaskRuns();
-  }, [fetchTaskRuns]);
-
-  // Poll for running/queued tasks
-  useEffect(() => {
-    const hasActive = taskRuns.some(
-      (t) => t.status === "running" || t.status === "queued"
-    );
-    if (!hasActive) return;
-
-    const interval = setInterval(fetchTaskRuns, 10000);
-    return () => clearInterval(interval);
-  }, [taskRuns, fetchTaskRuns]);
-
-  const handleTrigger = async () => {
-    setTriggering(true);
-    try {
-      await lazyBirdService.triggerTask(issueId, {
-        project_id: projectId,
-        prompt: "Implement the work described in this issue",
-      });
-      await fetchTaskRuns();
-    } catch (err: any) {
-      setError(err?.detail || "Failed to trigger task");
-    } finally {
-      setTriggering(false);
-    }
-  };
-
-  const handleCancel = async (taskId: string) => {
-    setCancelling(taskId);
-    try {
-      await lazyBirdService.cancelTask(issueId, taskId);
-      await fetchTaskRuns();
-    } catch (err: any) {
-      setError(err?.detail || "Failed to cancel task");
-    } finally {
-      setCancelling(null);
-    }
-  };
-
-  const latestTask = taskRuns.length > 0 ? taskRuns[0] : null;
-  const hasActiveTask = latestTask
-    ? latestTask.status === "running" || latestTask.status === "queued"
-    : false;
+  const handleTrigger = () =>
+    trigger({
+      project_id: projectId,
+      prompt: "Implement the work described in this issue",
+    });
 
   if (loading) {
     return (
@@ -214,7 +161,7 @@ export const LazyBirdTaskPanel = observer(function LazyBirdTaskPanel(props: Prop
               <button
                 type="button"
                 className="flex items-center gap-1 rounded px-2 py-1 text-xs text-red-500 hover:bg-red-50 disabled:opacity-50"
-                onClick={() => handleCancel(latestTask.id)}
+                onClick={() => cancel(latestTask.id)}
                 disabled={disabled || cancelling === latestTask.id}
               >
                 {cancelling === latestTask.id ? (
@@ -230,20 +177,18 @@ export const LazyBirdTaskPanel = observer(function LazyBirdTaskPanel(props: Prop
       )}
 
       {/* Task history (collapsed) */}
-      {taskRuns.length > 1 && (
+      {tasks.length > 1 && (
         <details className="text-xs">
           <summary className="cursor-pointer text-custom-text-400 hover:text-custom-text-300">
-            {taskRuns.length - 1} previous task{taskRuns.length > 2 ? "s" : ""}
+            {tasks.length - 1} previous task{tasks.length > 2 ? "s" : ""}
           </summary>
           <div className="mt-2 space-y-1">
-            {taskRuns.slice(1).map((task) => (
+            {tasks.slice(1).map((task) => (
               <div
                 key={task.id}
                 className="flex items-center justify-between rounded px-2 py-1 text-custom-text-400"
               >
-                <span
-                  className={`${STATUS_CONFIG[task.status].color}`}
-                >
+                <span className={`${STATUS_CONFIG[task.status].color}`}>
                   {STATUS_CONFIG[task.status].label}
                 </span>
                 <span>{new Date(task.created_at).toLocaleDateString()}</span>

@@ -3,14 +3,13 @@
 /**
  * TaskStatusBadge — Inline badge showing automation task status next to issue title.
  *
- * Lightweight: single fetch for the latest task run. Renders a small colored
+ * Lightweight: uses useLazyBirdTasks hook for data. Renders a small colored
  * dot + label. Designed for issue list views where space is limited.
  */
 
-import { useEffect, useState } from "react";
 import { Bot, Loader2 } from "lucide-react";
 
-import { lazyBirdService } from "./api";
+import { useLazyBirdTasks } from "./hooks";
 import type { TLazyBirdTaskRunStatus } from "./types";
 
 type Props = {
@@ -29,34 +28,11 @@ const STATUS_CONFIG: Record<
 };
 
 export function TaskStatusBadge({ issueId }: Props) {
-  const [status, setStatus] = useState<TLazyBirdTaskRunStatus | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { latestTask, loading } = useLazyBirdTasks(issueId);
 
-  useEffect(() => {
-    let cancelled = false;
+  if (loading || !latestTask) return null;
 
-    async function fetch() {
-      try {
-        const tasks = await lazyBirdService.listTaskRuns(issueId);
-        if (!cancelled && tasks.length > 0) {
-          setStatus(tasks[0].status);
-        }
-      } catch {
-        // Silently fail — badge is optional
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    fetch();
-    return () => {
-      cancelled = true;
-    };
-  }, [issueId]);
-
-  // Don't render anything if no task exists
-  if (loading || !status) return null;
-
+  const status = latestTask.status;
   const config = STATUS_CONFIG[status];
 
   return (

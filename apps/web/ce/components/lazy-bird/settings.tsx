@@ -5,9 +5,9 @@
  *
  * Allows configuring: enable/disable toggle, Lazy-Bird project ID,
  * state name mapping (Ready/In Progress/In Review), and Test Connection.
+ * Uses useLazyBirdConfig hook for all state management.
  */
 
-import { useCallback, useEffect, useState } from "react";
 import { observer } from "mobx-react";
 import {
   CheckCircle2,
@@ -19,11 +19,7 @@ import {
 } from "lucide-react";
 import { Spinner } from "@plane/ui";
 
-import { lazyBirdService } from "./api";
-import type {
-  TLazyBirdAutomationConfig,
-  TLazyBirdTestConnectionResponse,
-} from "./types";
+import { useLazyBirdConfig } from "./hooks";
 
 type Props = {
   projectId: string;
@@ -31,95 +27,22 @@ type Props = {
   disabled?: boolean;
 };
 
-type FormState = {
-  lazy_bird_project_id: string;
-  enabled: boolean;
-  ready_state_name: string;
-  in_progress_state_name: string;
-  review_state_name: string;
-};
-
-const DEFAULT_FORM: FormState = {
-  lazy_bird_project_id: "",
-  enabled: false,
-  ready_state_name: "Ready",
-  in_progress_state_name: "In Progress",
-  review_state_name: "In Review",
-};
-
 export const LazyBirdSettings = observer(function LazyBirdSettings(props: Props) {
   const { projectId, disabled = false } = props;
 
-  const [form, setForm] = useState<FormState>(DEFAULT_FORM);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [testing, setTesting] = useState(false);
-  const [connectionResult, setConnectionResult] =
-    useState<TLazyBirdTestConnectionResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [isNew, setIsNew] = useState(false);
-
-  const fetchConfig = useCallback(async () => {
-    try {
-      setError(null);
-      const config = await lazyBirdService.getConfig(projectId);
-      setForm({
-        lazy_bird_project_id: config.lazy_bird_project_id,
-        enabled: config.enabled,
-        ready_state_name: config.ready_state_name,
-        in_progress_state_name: config.in_progress_state_name,
-        review_state_name: config.review_state_name,
-      });
-      setIsNew(false);
-    } catch (err: any) {
-      if (err?.status === 404 || err?.detail === "Not found.") {
-        setIsNew(true);
-      } else {
-        setError("Failed to load configuration");
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [projectId]);
-
-  useEffect(() => {
-    fetchConfig();
-  }, [fetchConfig]);
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaving(true);
-    setSaveSuccess(false);
-    setError(null);
-    try {
-      await lazyBirdService.upsertConfig(projectId, form);
-      setSaveSuccess(true);
-      setIsNew(false);
-      setTimeout(() => setSaveSuccess(false), 3000);
-    } catch (err: any) {
-      setError(err?.detail || "Failed to save configuration");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleTestConnection = async () => {
-    setTesting(true);
-    setConnectionResult(null);
-    try {
-      const result = await lazyBirdService.testConnection({});
-      setConnectionResult(result);
-    } catch (err: any) {
-      setConnectionResult({ connected: false, error: err?.detail || "Connection failed" });
-    } finally {
-      setTesting(false);
-    }
-  };
-
-  const updateField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  };
+  const {
+    form,
+    updateField,
+    loading,
+    saving,
+    isNew,
+    error,
+    saveSuccess,
+    save,
+    testing,
+    connectionResult,
+    testConnection,
+  } = useLazyBirdConfig(projectId);
 
   if (loading) {
     return (
@@ -170,7 +93,7 @@ export const LazyBirdSettings = observer(function LazyBirdSettings(props: Props)
         </div>
       )}
 
-      <form onSubmit={handleSave} className="space-y-5">
+      <form onSubmit={save} className="space-y-5">
         {/* Lazy-Bird Project ID */}
         <div className="space-y-1.5">
           <label
@@ -266,7 +189,7 @@ export const LazyBirdSettings = observer(function LazyBirdSettings(props: Props)
           <button
             type="button"
             className="flex items-center gap-1.5 rounded-md border border-custom-border-200 px-4 py-2 text-sm text-custom-text-200 hover:bg-custom-background-80 disabled:opacity-50"
-            onClick={handleTestConnection}
+            onClick={testConnection}
             disabled={disabled || testing}
           >
             {testing ? (
