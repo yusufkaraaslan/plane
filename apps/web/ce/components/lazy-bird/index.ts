@@ -10,6 +10,7 @@ export { LazyBirdTaskPanel } from "./task-panel";
 export { LazyBirdSettings } from "./settings";
 export { TaskLogsModal } from "./task-logs-modal";
 export { TriggerTaskModal } from "./trigger-task-modal";
+export { TaskStatusBadge } from "./task-status-badge";
 export type {
   TLazyBirdAutomationConfig,
   TLazyBirdTaskRun,
