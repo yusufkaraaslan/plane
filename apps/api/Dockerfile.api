@@ -39,6 +39,11 @@ RUN apk add --no-cache --virtual .build-deps \
     rm -rf /var/cache/apk/*
 
 
+# Install plane-lazy-bird-integration from local source
+COPY plane-lazy-bird-integration /tmp/plane-lazy-bird/
+RUN pip install --no-deps /tmp/plane-lazy-bird/ --compile --no-cache-dir \
+    && rm -rf /tmp/plane-lazy-bird/
+
 # Add in Django deps and generate Django's static files
 COPY manage.py manage.py
 COPY plane plane/

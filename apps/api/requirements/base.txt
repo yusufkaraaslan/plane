@@ -71,5 +71,4 @@ opentelemetry-exporter-otlp==1.28.1
 drf-spectacular==0.28.0
 # html sanitizer
 nh3==0.2.18
-# lazy-bird integration
-plane-lazy-bird-integration @ git+https://github.com/yusufkaraaslan/plane-lazy-bird-integration.git@main
+# lazy-bird integration (installed separately via COPY in Dockerfile)
