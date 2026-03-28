@@ -345,6 +345,11 @@ export const coreRoutes: RouteConfigEntry[] = [
                 "./(all)/[workspaceSlug]/(settings)/settings/projects/[projectId]/automations/page.tsx"
               ),
             ]),
+            // Lazy Bird
+            route(
+              ":workspaceSlug/settings/projects/:projectId/lazy-bird",
+              "./(all)/[workspaceSlug]/(settings)/settings/projects/[projectId]/lazy-bird/page.tsx"
+            ),
           ]),
         ]),
       ]),

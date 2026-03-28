@@ -7,7 +7,7 @@
 // plane types
 import type { TIssueServiceType, TWorkItemWidgets } from "@plane/types";
 // lazy-bird integration
-import { LazyBirdTaskPanel } from "@/ce/components/lazy-bird";
+import { LazyBirdTaskPanel } from "@/plane-web/components/lazy-bird";
 
 export type TWorkItemAdditionalWidgetCollapsiblesProps = {
   disabled: boolean;
@@ -22,11 +22,6 @@ export function WorkItemAdditionalWidgetCollapsibles(props: TWorkItemAdditionalW
   const { disabled, projectId, workItemId, workspaceSlug } = props;
 
   return (
-    <LazyBirdTaskPanel
-      issueId={workItemId}
-      projectId={projectId}
-      workspaceSlug={workspaceSlug}
-      disabled={disabled}
-    />
+    <LazyBirdTaskPanel issueId={workItemId} projectId={projectId} workspaceSlug={workspaceSlug} disabled={disabled} />
   );
 }

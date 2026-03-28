@@ -11,7 +11,7 @@ import { PageHead } from "@/components/core/page-title";
 import { SettingsContentWrapper } from "@/components/settings/content-wrapper";
 import { useProject } from "@/hooks/store/use-project";
 import { useUserPermissions } from "@/hooks/store/user";
-import { LazyBirdSettings } from "@/ce/components/lazy-bird";
+import { LazyBirdSettings } from "@/plane-web/components/lazy-bird";
 import type { Route } from "./+types/page";
 import { LazyBirdProjectSettingsHeader } from "./header";
 
@@ -20,14 +20,9 @@ function LazyBirdSettingsPage({ params }: Route.ComponentProps) {
   const { workspaceUserInfo, allowPermissions } = useUserPermissions();
   const { currentProjectDetails: projectDetails } = useProject();
 
-  const canPerformProjectAdminActions = allowPermissions(
-    [EUserPermissions.ADMIN],
-    EUserPermissionsLevel.PROJECT
-  );
+  const canPerformProjectAdminActions = allowPermissions([EUserPermissions.ADMIN], EUserPermissionsLevel.PROJECT);
 
-  const pageTitle = projectDetails?.name
-    ? `${projectDetails.name} - Lazy Bird`
-    : undefined;
+  const pageTitle = projectDetails?.name ? `${projectDetails.name} - Lazy Bird` : undefined;
 
   if (workspaceUserInfo && !canPerformProjectAdminActions) {
     return <NotAuthorizedView section="settings" isProjectView className="h-auto" />;
