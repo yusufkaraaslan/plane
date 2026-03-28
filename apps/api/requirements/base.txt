@@ -72,4 +72,4 @@ drf-spectacular==0.28.0
 # html sanitizer
 nh3==0.2.18
 # lazy-bird integration
-plane-lazy-bird-integration>=0.1.0
+plane-lazy-bird-integration @ git+https://github.com/yusufkaraaslan/plane-lazy-bird-integration.git@main
