@@ -2,7 +2,7 @@
  * Lazy-Bird API service.
  *
  * Fetch wrapper using Plane's APIService pattern. Calls the Django REST API
- * endpoints served by plane_lazy_bird.api (mounted at /api/webhooks/lazy-bird/).
+ * endpoints served by plane_lazy_bird.api (mounted at /api/integrations/lazy-bird/).
  */
 
 import { API_BASE_URL } from "@plane/constants";
@@ -17,7 +17,7 @@ import type {
   TLazyBirdTaskLogsResponse,
 } from "./types";
 
-const LAZY_BIRD_BASE = "/api/webhooks/lazy-bird";
+const LAZY_BIRD_BASE = "/api/integrations/lazy-bird";
 
 export class LazyBirdService extends APIService {
   constructor() {
